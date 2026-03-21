@@ -1,3 +1,11 @@
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -12,14 +20,11 @@ Vrať POUZE validní JSON bez markdown nebo jiného textu:
 zavaznost: vysoka|stredni|nizka. celkove_hodnoceni: bezpecna|opatrnost|nebezpecna`;
 
   try {
-    // Parse body manually if needed
-    let body = req.body;
-    if (typeof body === 'string') {
-      body = JSON.parse(body);
-    }
+    const { messages } = req.body;
 
-    const { messages } = body;
-    if (!messages) return res.status(400).json({ error: 'Chybí messages' });
+    if (!messages) {
+      return res.status(400).json({ error: 'Chybí messages' });
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -39,17 +44,20 @@ zavaznost: vysoka|stredni|nizka. celkove_hodnoceni: bezpecna|opatrnost|nebezpecn
     const data = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: data.error?.message || 'API chyba' });
+      return res.status(response.status).json({
+        error: data.error?.message || 'Chyba API ' + response.status,
+      });
     }
 
     const raw = (data.content || []).map(b => b.text || '').join('');
     const clean = raw.replace(/```json|```/g, '').trim();
 
-    if (!clean) return res.status(500).json({ error: 'Prázdná odpověď od AI' });
+    if (!clean) return res.status(500).json({ error: 'AI vrátila prázdnou odpověď' });
 
     const parsed = JSON.parse(clean);
     return res.status(200).json(parsed);
+
   } catch (err) {
-    return res.status(500).json({ error: 'Chyba serveru: ' + err.message });
+    return res.status(500).json({ error: 'Chyba: ' + err.message });
   }
 }
