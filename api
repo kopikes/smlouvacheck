@@ -1,4 +1,9 @@
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const SYSTEM = `Jsi právní asistent specializující se na analýzu smluv. Analyzuješ smlouvy v češtině a identifikuješ potenciálně nevýhodné nebo rizikové klauzule pro klienta.
@@ -7,7 +12,15 @@ Vrať POUZE validní JSON bez markdown nebo jiného textu:
 zavaznost: vysoka|stredni|nizka. celkove_hodnoceni: bezpecna|opatrnost|nebezpecna`;
 
   try {
-    const { messages } = req.body;
+    // Parse body manually if needed
+    let body = req.body;
+    if (typeof body === 'string') {
+      body = JSON.parse(body);
+    }
+
+    const { messages } = body;
+    if (!messages) return res.status(400).json({ error: 'Chybí messages' });
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -22,11 +35,19 @@ zavaznost: vysoka|stredni|nizka. celkove_hodnoceni: bezpecna|opatrnost|nebezpecn
         messages,
       }),
     });
+
     const data = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: data.error?.message || 'API chyba' });
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: data.error?.message || 'API chyba' });
+    }
+
     const raw = (data.content || []).map(b => b.text || '').join('');
-    const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const clean = raw.replace(/```json|```/g, '').trim();
+
+    if (!clean) return res.status(500).json({ error: 'Prázdná odpověď od AI' });
+
+    const parsed = JSON.parse(clean);
     return res.status(200).json(parsed);
   } catch (err) {
     return res.status(500).json({ error: 'Chyba serveru: ' + err.message });
