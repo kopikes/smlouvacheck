@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="cs"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100vh}
+body{font-family:'DM Sans',sans-serif;background:#F7F6F3;color:#0E1B2E}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+nav{background:#1A2E47;padding:0 5%;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;width:100%}
+.logo{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;color:#fff}
+.logo-a{position:relative;display:inline-block;color:#fff}
+.logo-accent{position:absolute;top:3px;left:50%;transform:translateX(-50%);color:#7B9EFB;font-size:13px;line-height:1;pointer-events:none}
+.logo-czech{color:#7B9EFB}
+.nav-badge{display:flex;align-items:center;gap:5px;background:rgba(75,107,251,.18);color:#A8BFFD;font-size:11px;font-weight:500;padding:4px 12px;border-radius:20px;border:1px solid rgba(75,107,251,.3)}
+.hero{padding:60px 5% 40px;text-align:center;width:100%}
+.hero-inner{max-width:680px;margin:0 auto}
+.eyebrow{display:inline-flex;align-items:center;gap:6px;background:#EEF1FF;color:#4B6BFB;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 14px;border-radius:20px;border:1px solid #C7D0FC;margin-bottom:22px}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,5vw,54px);font-weight:600;line-height:1.1;color:#0E1B2E;margin-bottom:18px}
+.sub{font-size:16px;color:#4A5568;line-height:1.8;max-width:480px;margin:0 auto 28px}
+.trust-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:44px}
+.trust-badge{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #E5E2D9;border-radius:20px;padding:6px 14px;font-size:12px;color:#4A5568}
+.upload-section{width:100%;padding:0 5% 72px}
+.upload-inner{max-width:580px;margin:0 auto}
+.dropzone{border:2px dashed #E5E2D9;border-radius:16px;padding:44px 32px;text-align:center;background:#fff;transition:all .2s;cursor:pointer;width:100%}
+.dropzone:hover,.dropzone.drag{border-color:#4B6BFB;background:#EEF1FF}
+.upload-icon{width:56px;height:56px;background:#EEF1FF;border:1px solid #C7D0FC;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.drop-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:#0E1B2E;margin-bottom:6px}
+.drop-sub{font-size:13px;color:#8A8E99;margin-bottom:16px}
+.btn-indigo{background:#4B6BFB;color:#fff;border:none;border-radius:9px;padding:10px 22px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
+.btn-indigo:hover{background:#3A5AEA}
+.file-types{font-size:11px;color:#ccc;margin-top:12px}
+.privacy{display:flex;align-items:flex-start;gap:7px;padding:12px 4px;margin-top:4px;font-size:11.5px;color:#8A8E99;line-height:1.6}
+.err{background:#FEF3F1;border:1px solid #F5C9C3;border-radius:10px;padding:13px 16px;margin-top:12px;font-size:13px;color:#9B2B1E;line-height:1.5;display:flex;gap:8px;align-items:flex-start}
+.loading{display:none;text-align:center;padding:40px 20px}
+.spinner{width:34px;height:34px;border:2px solid #EEF1FF;border-top:2px solid #4B6BFB;border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+#results{display:none;animation:fadeUp .35s ease both;width:100%}
+.res-card{background:#fff;border:1px solid #E5E2D9;border-radius:16px;overflow:hidden;margin-top:16px}
+.res-hdr{padding:20px 24px;border-bottom:1px solid #EEECD6;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.res-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600;color:#0E1B2E;display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.res-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:#8A8E99}
+.btn-outline{background:transparent;border:1px solid #E5E2D9;border-radius:8px;padding:7px 14px;font-size:12px;cursor:pointer;color:#4A5568;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.btn-outline:hover{background:#F7F6F3}
+.sec-label{font-size:10.5px;font-weight:600;color:#8A8E99;text-transform:uppercase;letter-spacing:1px;padding:16px 24px 4px;display:block}
+.risk-row{display:flex;gap:12px;padding:12px 24px;border-bottom:1px solid #EEECD6}
+.risk-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}
+.risk-name{font-size:14px;font-weight:500;color:#0E1B2E;margin-bottom:4px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.risk-lbl{font-size:10px;font-weight:500;padding:2px 9px;border-radius:20px;border:1px solid}
+.risk-popis{font-size:13px;color:#4A5568;line-height:1.65}
+.risk-sekce{font-size:11px;color:#8A8E99;margin-top:4px}
+.pos-row{display:flex;gap:12px;padding:12px 24px;border-bottom:1px solid #EEECD6}
+.res-footer{background:#F2F1EE;border-top:1px solid #EEECD6;padding:11px 24px;display:flex;align-items:center;gap:7px;font-size:11px;color:#8A8E99}
+.overall-pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:500;padding:3px 11px;border-radius:20px;border:1px solid}
+.how{background:#1A2E47;padding:64px 5%;text-align:center;width:100%}
+.how h2{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:#fff;margin-bottom:36px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;max-width:640px;margin:0 auto}
+.step-icon{width:48px;height:48px;border-radius:12px;background:#4B6BFB;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.step-t{color:#F0F4FF;font-weight:500;font-size:14px;margin-bottom:5px}
+.step-s{color:#7B9EFB;font-size:12px;line-height:1.55}
+.reviews{padding:64px 5%;background:#fff;width:100%}
+.reviews h2{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;color:#0E1B2E;text-align:center;margin-bottom:28px}
+.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1000px;margin:0 auto}
+.review-card{background:#F7F6F3;border:1px solid #E5E2D9;border-radius:12px;padding:18px}
+.stars{color:#D4A017;font-size:13px;margin-bottom:9px}
+.review-text{font-size:13px;color:#4A5568;line-height:1.7;margin-bottom:12px}
+.review-name{font-weight:500;font-size:13px;color:#0E1B2E}
+.review-role{font-size:11px;color:#8A8E99;margin-top:2px}
+footer{background:#1A2E47;color:#7B9EFB;padding:24px 5%;text-align:center;font-size:12px;width:100%}
+footer .ft{color:#A8BFFD;margin-bottom:4px}
+footer .fs{opacity:.55}
+@media(max-width:768px){.steps{grid-template-columns:1fr}.review-grid{grid-template-columns:1fr}.hero{padding:44px 5% 28px}.dropzone{padding:32px 20px}}
+@media(min-width:769px) and (max-width:1024px){.review-grid{grid-template-columns:repeat(2,1fr)}}
+</style></head><body>
+
+<nav>
+  <span class="logo">Smlouv<span class="logo-a">a<span class="logo-accent">&#180;</span></span><span class="logo-czech">Czech</span></span>
+  <span class="nav-badge">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Diskrétní
+  </span>
+</nav>
+
+<div class="hero"><div class="hero-inner">
+  <div class="eyebrow">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    AI právní asistent
+  </div>
+  <h1>Chraňte se před<br>nevýhodnými smlouvami</h1>
+  <p class="sub">Nahrajte libovolnou smlouvu a během pár vteřin zjistěte, zda neskrývá nějaké háčky. Bez právníka, diskrétně a do minuty.</p>
+  <div class="trust-row">
+    <span class="trust-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4B6BFB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Žádné ukládání dat</span>
+    <span class="trust-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4B6BFB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Šifrované zpracování</span>
+    <span class="trust-badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4B6BFB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Výsledky okamžitě</span>
+  </div>
+</div></div>
+
+<div class="upload-section"><div class="upload-inner">
+  <div class="dropzone" id="dz" onclick="document.getElementById('fi').click()">
+    <div class="upload-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4B6BFB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+    </div>
+    <p class="drop-title">Přetáhněte smlouvu sem</p>
+    <p class="drop-sub">nebo klikněte a vyberte soubor ze svého počítače</p>
+    <button class="btn-indigo" onclick="event.stopPropagation();document.getElementById('fi').click()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Vybrat soubor
+    </button>
+    <p class="file-types">PDF nebo TXT</p>
+    <input type="file" id="fi" accept=".pdf,.txt" style="display:none">
+  </div>
+  <div class="privacy">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A8E99" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <span><strong style="color:#4A5568">Garantujeme diskrétnost.</strong> Váš dokument není uložen ani sdílen s třetími stranami. Po dokončení analýzy jsou data smazána.</span>
+  </div>
+  <div class="err" id="errBox" style="display:none">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#D94F3D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span id="errMsg"></span>
+  </div>
+  <div class="loading" id="loadingBox">
+    <div class="spinner"></div>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#0E1B2E;margin-bottom:5px">Analyzuji smlouvu…</p>
+    <p style="font-size:12px;color:#8A8E99">Může to trvat 10–30 sekund</p>
+  </div>
+  <div id="results"></div>
+</div></div>
+
+<div class="how">
+  <h2>Jak to funguje</h2>
+  <div class="steps">
+    <div>
+      <div class="step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg></div>
+      <p class="step-t">Nahrajte smlouvu</p><p class="step-s">PDF nebo textový soubor</p>
+    </div>
+    <div>
+      <div class="step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <p class="step-t">AI smlouvu analyzuje</p><p class="step-s">Prohledá každou klauzuli a identifikuje rizika</p>
+    </div>
+    <div>
+      <div class="step-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <p class="step-t">Dostanete přehled</p><p class="step-s">Jasný seznam rizik, doporučení a souhrn</p>
+    </div>
+  </div>
+</div>
+
+<div class="reviews">
+  <h2>Co říkají uživatelé</h2>
+  <div class="review-grid">
+    <div class="review-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="review-text">„Před podpisem smlouvy s novým klientem jsem si to nechala zkontrolovat. Našlo klauzuli, která by mi zakazovala pracovat v oboru 3 roky!"</p><p class="review-name">Markéta H.</p><p class="review-role">Freelancerka, Praha</p></div>
+    <div class="review-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="review-text">„Nájemní smlouva vypadala standardně. AI ale našla, že pronajímatel si vyhrazuje právo vstoupit kdykoliv bez upozornění. Zachránilo mě to od problémů."</p><p class="review-name">Tomáš B.</p><p class="review-role">Nájemník, Brno</p></div>
+    <div class="review-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="review-text">„Úžasný nástroj. Během 30 vteřin jsem věděla, co mi smlouva říká mezi řádky. Doporučuji všem před podpisem čehokoliv."</p><p class="review-name">Jana K.</p><p class="review-role">OSVČ, Olomouc</p></div>
+    <div class="review-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="review-text">„Konečně něco, čemu rozumím. Tohle mi vysvětlilo co mě čeká v nové pracovní smlouvě srozumitelně a rychle."</p><p class="review-name">Pavel M.</p><p class="review-role">Živnostník, Plzeň</p></div>
+    <div class="review-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="review-text">„Měl jsem podepsat smlouvu o dílo. Nástroj odhalil, že pokuta za zpoždění byla nastavena tak přísně, že bych riskoval celou odměnu za projekt."</p><p class="review-name">Radek N.</p><p class="review-role">Grafický designer, Ostrava</p></div>
+    <div class="review-card"><div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div><p class="review-text">„Jednoduchý, rychlý a přehledný. Právník by mě stál tisíce korun, tady jsem měla výsledek do minuty zdarma. Prostě geniální nápad."</p><p class="review-name">Lucie V.</p><p class="review-role">Podnikatelka, Ceske Budejovice</p></div>
+  </div>
+</div>
+
+<footer>
+  <p class="ft">SmlouváCzech — AI analýza smluv pro každého</p>
+  <p class="fs">Výsledky mají informativní charakter a nenahrazují právní poradenství.</p>
+</footer>
+
+<script>
+const SYSTEM=`Jsi právní asistent specializující se na analýzu smluv. Analyzuješ smlouvy v češtině a identifikuješ potenciálně nevýhodné nebo rizikové klauzule pro klienta.
+Vrať POUZE validní JSON bez markdown nebo jiného textu:
+{"souhrn":"...","typ_smlouvy":"...","rizika":[{"nazev":"...","popis":"...","zavaznost":"vysoka","sekce":"..."}],"pozitivni":[{"nazev":"...","popis":"..."}],"doporuceni":"...","celkove_hodnoceni":"bezpecna"}
+zavaznost: vysoka|stredni|nizka. celkove_hodnoceni: bezpecna|opatrnost|nebezpecna`;
+
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)go(f)});
+document.getElementById('fi').addEventListener('change',e=>{const f=e.target.files[0];if(f)go(f);e.target.value=''});
+
+async function go(file){
+  document.getElementById('errBox').style.display='none';
+  document.getElementById('loadingBox').style.display='block';
+  document.getElementById('results').innerHTML='';
+  document.getElementById('results').style.display='none';
+  try{
+    const isText=file.type==='text/plain'||file.name.endsWith('.txt');
+    let messages;
+    if(isText){
+      const text=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('Nelze číst'));r.readAsText(file,'UTF-8')});
+      messages=[{role:'user',content:'Analyzuj tuto smlouvu. Vrať POUZE JSON.\n\nSMLOUVA:\n'+text}];
+    }else{
+      const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('Nelze číst'));r.readAsDataURL(file)});
+      messages=[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:'Analyzuj tuto smlouvu. Vrať POUZE JSON.'}]}];
+    }
+    const resp=await fetch('/api/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages})
+    });
+    const data=await resp.json();
+    if(!resp.ok)throw new Error(data.error?.message||'Chyba '+resp.status);
+    const raw=(data.content||[]).map(b=>b.text||'').join('');
+    const d=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    render(d,file.name);
+  }catch(e){
+    document.getElementById('errMsg').textContent='Chyba: '+e.message;
+    document.getElementById('errBox').style.display='flex';
+  }finally{
+    document.getElementById('loadingBox').style.display='none';
+  }
+}
+
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
+
+function render(d,fname){
+  const ovm={
+    bezpecna:{dot:'#2E7D5A',c:'#1A4D33',bg:'#EDF7F2',b:'#B5D9C5',lbl:'Relativně bezpečná'},
+    opatrnost:{dot:'#C07A1A',c:'#8A5510',bg:'#FEF8ED',b:'#F0D9A8',lbl:'Doporučujeme opatrnost'},
+    nebezpecna:{dot:'#D94F3D',c:'#9B2B1E',bg:'#FEF3F1',b:'#F5C9C3',lbl:'Obsahuje závažná rizika'},
+  };
+  const ov=ovm[d.celkove_hodnoceni]||ovm.opatrnost;
+  const rS={
+    vysoka:{dot:'#D94F3D',lbl:'Závažné',lc:'#9B2B1E',lb:'#FEF3F1',lb2:'#F5C9C3'},
+    stredni:{dot:'#C07A1A',lbl:'Střední',lc:'#8A5510',lb:'#FEF8ED',lb2:'#F0D9A8'},
+    nizka:{dot:'#6B7A99',lbl:'Drobné',lc:'#3D4D6A',lb:'#F0F2F8',lb2:'#C8CFDF'},
+  };
+  let rizikaHTML='';
+  if(d.rizika&&d.rizika.length){
+    rizikaHTML='<span class="sec-label">Nalezená rizika <span style="color:#E5E2D9">('+d.rizika.length+')</span></span>';
+    d.rizika.forEach(function(r){
+      const s=rS[r.zavaznost]||rS.nizka;
+      rizikaHTML+='<div class="risk-row"><div class="risk-dot" style="background:'+s.dot+'"></div><div style="flex:1;min-width:0"><div class="risk-name">'+esc(r.nazev)+'<span class="risk-lbl" style="color:'+s.lc+';background:'+s.lb+';border-color:'+s.lb2+'">'+s.lbl+'</span></div><p class="risk-popis">'+esc(r.popis)+'</p>'+(r.sekce?'<p class="risk-sekce">'+esc(r.sekce)+'</p>':'')+'</div></div>';
+    });
+  }
+  let pozHTML='';
+  if(d.pozitivni&&d.pozitivni.length){
+    pozHTML='<span class="sec-label">Pozitivní aspekty</span>';
+    d.pozitivni.forEach(function(p){
+      pozHTML+='<div class="pos-row"><div class="risk-dot" style="background:#2E7D5A;margin-top:7px"></div><div><p style="font-size:14px;font-weight:500;color:#0E1B2E;margin-bottom:4px">'+esc(p.nazev)+'</p><p style="font-size:13px;color:#4A5568;line-height:1.65">'+esc(p.popis)+'</p></div></div>';
+    });
+  }
+  const el=document.getElementById('results');
+  el.innerHTML='<div class="res-card">'
+    +'<div class="res-hdr"><div>'
+    +'<div class="res-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4B6BFB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Výsledky analýzy</div>'
+    +'<div class="res-meta"><span>'+esc(fname)+(d.typ_smlouvy?' · '+esc(d.typ_smlouvy):'')+'</span>'
+    +'<span class="overall-pill" style="color:'+ov.c+';background:'+ov.bg+';border-color:'+ov.b+'"><span style="width:6px;height:6px;border-radius:50%;background:'+ov.dot+';display:inline-block;flex-shrink:0"></span>'+ov.lbl+'</span></div>'
+    +'</div><button class="btn-outline" onclick="reset()">Nová analýza</button></div>'
+    +'<span class="sec-label">Souhrn</span>'
+    +'<div style="padding:0 24px 16px;font-size:14px;color:#4A5568;line-height:1.75">'+esc(d.souhrn)+'</div>'
+    +rizikaHTML+pozHTML
+    +'<span class="sec-label">Doporučení</span>'
+    +'<div style="padding:0 24px 20px;font-size:14px;color:#4A5568;line-height:1.75">'+esc(d.doporuceni)+'</div>'
+    +'<div style="padding:16px 24px 20px;border-top:1px solid #EEECD6;text-align:center">'
+    +'<button class="btn-indigo" onclick="reset()" style="width:100%;justify-content:center;padding:11px 20px;font-size:13.5px">Zkontrolovat další smlouvu</button>'
+    +'</div>'
+    +'<div class="res-footer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Dokument nebyl uložen ani sdílen. Data jsou po analýze smazána.</div>'
+    +'</div>';
+  el.style.display='block';
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function reset(){var el=document.getElementById('results');el.innerHTML='';el.style.display='none';document.getElementById('errBox').style.display='none';}
+</script>
+</body></html>
