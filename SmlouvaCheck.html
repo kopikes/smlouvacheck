@@ -186,16 +186,34 @@ async function go(file){
       const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('Nelze číst'));r.readAsDataURL(file)});
       messages=[{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:'Analyzuj tuto smlouvu. Vrať POUZE JSON.'}]}];
     }
+    // Vercel limit: max 4.5MB body - warn for large PDFs
+    if(!isText && file.size > 3*1024*1024){
+      throw new Error('Soubor je příliš velký (max 3 MB). Zkuste TXT formát.');
+    }
+
     const resp=await fetch('/api/analyze',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages})
     });
-    const data=await resp.json();
-    if(!resp.ok)throw new Error(data.error?.message||'Chyba '+resp.status);
-    const raw=(data.content||[]).map(b=>b.text||'').join('');
-    const d=JSON.parse(raw.replace(/```json|```/g,'').trim());
-    render(d,file.name);
+
+    let data;
+    const text=await resp.text();
+    if(!text||text.trim()===''){
+      throw new Error('Server vrátil prázdnou odpověď. Zkuste znovu nebo použijte menší soubor.');
+    }
+    try{
+      data=JSON.parse(text);
+    }catch(e){
+      throw new Error('Chyba parsování odpovědi: '+text.substring(0,100));
+    }
+
+    if(!resp.ok)throw new Error(data.error||'Chyba serveru '+resp.status);
+    if(data.souhrn){
+      render(data,file.name);
+    }else{
+      throw new Error('Neočekávaný formát odpovědi od AI.');
+    }
   }catch(e){
     document.getElementById('errMsg').textContent='Chyba: '+e.message;
     document.getElementById('errBox').style.display='flex';
