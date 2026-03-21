@@ -1,11 +1,3 @@
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-  },
-};
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -20,9 +12,23 @@ Vrať POUZE validní JSON bez markdown nebo jiného textu:
 zavaznost: vysoka|stredni|nizka. celkove_hodnoceni: bezpecna|opatrnost|nebezpecna`;
 
   try {
-    const { messages } = req.body;
+    // Manually read body from stream
+    const rawBody = await new Promise((resolve, reject) => {
+      let data = '';
+      req.on('data', chunk => { data += chunk.toString(); });
+      req.on('end', () => resolve(data));
+      req.on('error', reject);
+    });
 
-    if (!messages) {
+    let body;
+    try {
+      body = JSON.parse(rawBody);
+    } catch (e) {
+      return res.status(400).json({ error: 'Neplatný JSON: ' + e.message });
+    }
+
+    const { messages } = body;
+    if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: 'Chybí messages' });
     }
 
@@ -54,7 +60,13 @@ zavaznost: vysoka|stredni|nizka. celkove_hodnoceni: bezpecna|opatrnost|nebezpecn
 
     if (!clean) return res.status(500).json({ error: 'AI vrátila prázdnou odpověď' });
 
-    const parsed = JSON.parse(clean);
+    let parsed;
+    try {
+      parsed = JSON.parse(clean);
+    } catch (e) {
+      return res.status(500).json({ error: 'Chyba parsování AI odpovědi: ' + clean.substring(0, 200) });
+    }
+
     return res.status(200).json(parsed);
 
   } catch (err) {
