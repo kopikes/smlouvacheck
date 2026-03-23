@@ -463,18 +463,18 @@ const T={
   cs:{
     nav_badge:'100% diskrétní',
     eyebrow:'AI právní asistent',
-    h1:'Chraňte se před<br>nevýhodnými smlouvami',
+    h1:'Chraňte se před<br>nevýhodnými smlouvami!',
     sub:'Nahrajte libovolnou smlouvu a během pár vteřin zjistěte, zda neskrývá nějaké háčky. Bez právníka, diskrétně a do minuty.',
     trust1:'Žádné ukládání dat',trust2:'Šifrované zpracování',trust3:'Výsledky okamžitě',trust4:'Do 60 sekund',
     drop_title:'Přetáhněte smlouvu sem',drop_sub:'nebo klikněte a vyberte soubor ze svého počítače',
     btn_upload:'Vybrat dokument',
     privacy_title:'Garantujeme diskrétnost.',privacy_text:'Váš dokument není uložen ani sdílen s třetími stranami. Po dokončení analýzy jsou data smazána.',
     loading_title:'Analyzuji smlouvu…',loading_sub:'Prohledávám klauzule · 10–30 sekund',
-    how_title:'Jak to funguje',how_sub:'Tři kroky k bezpečnému podpisu',
+    how_title:'Jak to funguje:',how_sub:'Tři kroky k bezpečnému podpisu',
     step1_num:'Krok 01',step1_t:'Nahrajte smlouvu',step1_s:'PDF nebo textový soubor. Podporujeme všechny standardní formáty.',
     step2_num:'Krok 02',step2_t:'AI smlouvu analyzuje',step2_s:'Prohledá každou klauzuli a identifikuje potenciální rizika.',
     step3_num:'Krok 03',step3_t:'Dostanete přehled',step3_s:'Jasný seznam rizik, doporučení a konkrétní kroky co dělat dál.',
-    reviews_title:'Co říkají uživatelé',reviews_sub:'Přes 2 400 spokojených uživatelů',
+    reviews_title:'Co říkají uživatelé',reviews_sub:'100+ spokojených uživatelů',
     r1_text:'„Před podpisem smlouvy s novým klientem jsem si to nechala zkontrolovat. Našlo klauzuli, která by mi zakazovala pracovat v oboru 3 roky!"',
     r1_role:'Freelancerka, Praha',
     r2_text:'„Nájemní smlouva vypadala standardně. AI ale našla, že pronajímatel si vyhrazuje právo vstoupit kdykoliv bez upozornění. Zachránilo mě to od problémů."',
@@ -498,18 +498,18 @@ const T={
   en:{
     nav_badge:'100% private',
     eyebrow:'AI legal assistant',
-    h1:'Protect yourself from<br>unfavorable contracts',
+    h1:'Protect yourself from<br>unfavorable contracts!',
     sub:'Upload any contract and find out in seconds if it hides any catches. No lawyer needed, private, and under a minute.',
     trust1:'No data storage',trust2:'Encrypted processing',trust3:'Instant results',trust4:'Under 60 seconds',
     drop_title:'Drag & drop your contract here',drop_sub:'or click to select a file from your computer',
     btn_upload:'Select document',
     privacy_title:'We guarantee privacy.',privacy_text:'Your document is not stored or shared with third parties. Data is deleted after analysis.',
     loading_title:'Analyzing contract…',loading_sub:'Scanning clauses · 10–30 seconds',
-    how_title:'How it works',how_sub:'Three steps to a safe signature',
+    how_title:'How it works:',how_sub:'Three steps to a safe signature',
     step1_num:'Step 01',step1_t:'Upload the contract',step1_s:'PDF or text file. We support all standard formats.',
     step2_num:'Step 02',step2_t:'AI analyzes the contract',step2_s:'Scans every clause and identifies potential risks.',
     step3_num:'Step 03',step3_t:'Get your overview',step3_s:'A clear list of risks, recommendations and specific next steps.',
-    reviews_title:'What users say',reviews_sub:'Over 2,400 satisfied users',
+    reviews_title:'What users say',reviews_sub:'100+ satisfied users',
     r1_text:'"Before signing a contract with a new client, I had it checked. It found a clause that would have banned me from working in my field for 3 years!"',
     r1_role:'Freelancer, Prague',
     r2_text:'"The rental agreement looked standard. But the AI found that the landlord reserved the right to enter anytime without notice. It saved me from trouble."',
@@ -568,22 +568,54 @@ dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
 dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)go(f)});
 document.getElementById('fi').addEventListener('change',e=>{const f=e.target.files[0];if(f)go(f);e.target.value=''});
 
+function showErr(msg){
+  document.getElementById('errMsg').textContent=msg;
+  document.getElementById('errBox').style.display='flex';
+}
+
+const ALLOWED_EXT=['.pdf','.txt','.doc','.docx'];
+const MAX_SIZE=3*1024*1024;
+
 async function go(file){
   document.getElementById('errBox').style.display='none';
-  document.getElementById('loadingBox').style.display='block';
   document.getElementById('results').innerHTML='';
   document.getElementById('results').style.display='none';
+
+  // validace souboru
+  const name=file.name.toLowerCase();
+  const ext=name.substring(name.lastIndexOf('.'));
+  if(!ALLOWED_EXT.includes(ext)){
+    return showErr(curLang==='cs'
+      ?'Nepodporovaný formát souboru. Nahrajte prosím PDF, DOCX, DOC nebo TXT.'
+      :'Unsupported file format. Please upload PDF, DOCX, DOC or TXT.');
+  }
+  if(file.size>MAX_SIZE){
+    const sizeMB=(file.size/1024/1024).toFixed(1);
+    return showErr(curLang==='cs'
+      ?'Soubor je příliš velký ('+sizeMB+' MB). Maximální velikost je 3 MB.'
+      :'File is too large ('+sizeMB+' MB). Maximum size is 3 MB.');
+  }
+  if(file.size===0){
+    return showErr(curLang==='cs'
+      ?'Soubor je prázdný. Nahrajte prosím soubor s obsahem.'
+      :'File is empty. Please upload a file with content.');
+  }
+
+  document.getElementById('loadingBox').style.display='block';
   try{
-    if(file.size>3*1024*1024)throw new Error('Soubor je příliš velký (max 3 MB).');
-    const name=file.name.toLowerCase();
     const isText=file.type==='text/plain'||name.endsWith('.txt');
     const isDocx=name.endsWith('.docx')||name.endsWith('.doc');
     let fileData,fileType;
     if(isText){
-      fileData=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('Nelze číst'));r.readAsText(file,'UTF-8')});
+      fileData=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('err'));r.readAsText(file,'UTF-8')});
+      if(!fileData||fileData.trim().length<20){
+        throw new Error(curLang==='cs'
+          ?'Soubor neobsahuje dostatek textu k analýze.'
+          :'File does not contain enough text to analyze.');
+      }
       fileType='text';
     }else{
-      const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('Nelze číst'));r.readAsDataURL(file)});
+      const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('err'));r.readAsDataURL(file)});
       fileData=b64;
       fileType=isDocx?'docx':'pdf';
     }
@@ -593,23 +625,40 @@ async function go(file){
       body:JSON.stringify({fileData,fileName:file.name,fileType})
     });
     const data=await resp.json();
-    if(!resp.ok)throw new Error(data.error||'API chyba '+resp.status);
+    if(!resp.ok){
+      const msg=data.error||'';
+      if(msg.includes('prázdný')||msg.includes('nečitelný')){throw new Error(msg)}
+      throw new Error(curLang==='cs'
+        ?'Nepodařilo se analyzovat soubor. Zkuste jiný formát nebo zkontrolujte, zda soubor obsahuje čitelný text.'
+        :'Failed to analyze the file. Try a different format or check that the file contains readable text.');
+    }
     if(data.content){
       const raw=(data.content||[]).map(b=>b.text||'').join('');
       let clean=raw.replace(/```json|```/g,'').trim();
       const start=clean.indexOf('{');
       const end=clean.lastIndexOf('}');
-      if(start===-1||end===-1)throw new Error('Odpověď neobsahuje JSON.');
+      if(start===-1||end===-1){
+        throw new Error(curLang==='cs'
+          ?'Nepodařilo se zpracovat odpověď. Zkuste to prosím znovu.'
+          :'Failed to process the response. Please try again.');
+      }
       clean=clean.substring(start,end+1);
       clean=clean.replace(/[\x00-\x1f]/g,m=>m==='\n'||m==='\r'||m==='\t'?' ':' ');
-      const d=JSON.parse(clean);
-      render(d,file.name);
+      try{
+        const d=JSON.parse(clean);
+        render(d,file.name);
+      }catch(pe){
+        throw new Error(curLang==='cs'
+          ?'Nepodařilo se zpracovat odpověď. Zkuste to prosím znovu.'
+          :'Failed to process the response. Please try again.');
+      }
     }else{
-      throw new Error('Neočekávaná odpověď od API.');
+      throw new Error(curLang==='cs'
+        ?'Nepodařilo se získat analýzu. Zkuste to prosím znovu.'
+        :'Failed to get analysis. Please try again.');
     }
   }catch(e){
-    document.getElementById('errMsg').textContent='Chyba: '+e.message;
-    document.getElementById('errBox').style.display='flex';
+    showErr(e.message);
   }finally{
     document.getElementById('loadingBox').style.display='none';
   }
@@ -670,7 +719,11 @@ function render(d,fname){
   el.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function reset(){var el=document.getElementById('results');el.innerHTML='';el.style.display='none';document.getElementById('errBox').style.display='none';}
+function reset(){
+  var el=document.getElementById('results');el.innerHTML='';el.style.display='none';
+  document.getElementById('errBox').style.display='none';
+  document.getElementById('dz').scrollIntoView({behavior:'smooth',block:'center'});
+}
 </script>
 </body>
 </html>
