@@ -1,5 +1,8 @@
 {
   "name": "smlouvaczech",
-  "version": "1.0.0",
-  "private": true
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "mammoth": "^1.8.0"
+  }
 }
